@@ -1,0 +1,13 @@
+{
+    "name": "turierik/gyak1",
+    "description": "bármi",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Turierik\\Gyak1\\": "src/"
+        }
+    },
+    "require": {
+        "alrik11es/cowsayphp": "^1.2"
+    }
+}
