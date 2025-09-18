@@ -43,3 +43,72 @@ const { faker } = require('@faker-js/faker');
 // ECMAScript Module (ESM) - újabb, a standard része
 import { faker } from '@faker-js/faker';
 ```
+
+## Laravel projekt elkezdése
+
+```sh
+composer global require laravel/installer
+laravel new blogocska
+```
+(válaszok az órán: none, Pest, sqlite, yes)
+
+```sh
+cd blogocska
+composer run dev
+```
+
+Breeze (elsősorban auth céljából):
+```sh
+composer require laravel/breeze
+php artisan breeze:install
+```
+
+## Artisan parancsok
+
+Új modell generálása:
+
+```sh
+php artisan make:model
+```
+
+**Modell neve egyesszámban és nagy kezdőbetűvel van megállapodás szerint!** (pl. `Post`)
+
+Válasszuk ki, hogy migrációt is kérünk, ha még nincs meg hozzá a tábla az adatbázisban.
+
+Új migráció generálása: (pl. kapcsolótáblához kell migráció, de modell nem, mert a kapcsolatot be tudjuk járni a két összekötött modellben létrehozandó metódusokkal)
+
+```sh
+php artisan make:migration
+```
+
+Migráció neve pl. `create_foos_table` formátumú + elé teszi az aktuális időbélyeget automatikusan.
+
+(Kapcsolótábla konvenció szerinti elnevezése: `bar_foo`, de ettől el lehet térni, csak tudni kell felparaméterezni a kapcsolatot.)
+
+## Migrációk futtatása
+
+Minden még nem futtatott migráció:
+
+```sh
+php artisan migrate
+```
+
+Vigyázzunk, ha időközben belemódosítunk egy már futtatott migrációba (bad practice), akkor az nem érvényesül!
+
+Minden migráció tiszta lappal (szálljunk ki és be):
+
+```sh
+php artisan migrate:fresh
+```
+
+Migráció visszavonása:
+
+```sh
+php artisan migrate:rollback
+```
+
+Migrációk státuszának lekérdezése:
+
+```sh
+php artisan migrate:status
+```
