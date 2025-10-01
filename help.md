@@ -44,7 +44,7 @@ const { faker } = require('@faker-js/faker');
 import { faker } from '@faker-js/faker';
 ```
 
-## Laravel projekt elkezdése
+## Laravel projekt (új, saját) elkezdése
 
 ```sh
 composer global require laravel/installer
@@ -63,7 +63,21 @@ composer require laravel/breeze
 php artisan breeze:install
 ```
 
+## SOS! Letöltöttem a repoból a projektet, de nem megy!
+
+```sh
+composer install
+npm i
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+composer run dev
+```
+
 ## Artisan parancsok
+
+### Modellek és migrációk generálása
 
 Új modell generálása:
 
@@ -111,4 +125,40 @@ Migrációk státuszának lekérdezése:
 
 ```sh
 php artisan migrate:status
+```
+
+### Factory és seeder
+
+Új factory generálása:
+
+```sh
+php artisan make:factory
+```
+
+Adatbázis seedelése DatabaseSeeder.php futtatásával:
+
+```sh
+php artisan db:seed
+```
+
+Migrációk tiszta lappal és DatabaseSeeder.php futtatása:
+
+```sh
+php artisan migrate:fresh --seed
+```
+
+### Vezérlők generálása
+
+Új vezérlő:
+
+```sh
+php artisan make:controller
+```
+
+(Névkonvenció: pl. `FooController` - empty vagy resource típusú kontroller generálása ajánlott.)
+
+Resource vezérlő adott modell fölött egy paranccsal:
+
+```sh
+php artisan make:controller FooController -r Foo
 ```
