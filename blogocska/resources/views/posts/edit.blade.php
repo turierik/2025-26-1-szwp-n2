@@ -1,35 +1,36 @@
 @extends('bloglayout')
 
-@section('title', "Új bejegyzés létrehozása")
+@section('title', $post -> title . " bejegyzés szerkesztése")
 
 @section('content')
 
-<h2 class="text-2xl">Új bejegyzés létrehozása</h2>
+<h2 class="text-2xl">{{ $post -> title }} bejegyzés szerkesztése</h2>
 
-<form action="{{ route('posts.store') }}" method="POST">
+<form action="{{ route('posts.update', ['post' => $post]) }}" method="POST">
     @csrf
+    @method('PATCH')
     Cím: @error('title')
         <span class="text-red-500">{{ $message }}</span>
     @enderror<br>
-    <input type="text" name="title" value="{{ old('title', '') }}" class="w-full"><br>
+    <input type="text" name="title" value="{{ old('title', $post -> title) }}" class="w-full"><br>
     Tartalom: @error('content')
         <span class="text-red-500">{{ $message }}</span>
     @enderror<br>
-    <textarea rows="5" name="content" class="w-full">{{ old('content', '') }}</textarea><br>
+    <textarea rows="5" name="content" class="w-full">{{ old('content', $post -> content) }}</textarea><br>
     Szerző: @error('author_id')
         <span class="text-red-500">{{ $message }}</span>
     @enderror
     <select name="author_id">
         @foreach ($users as $user)
-            <option value="{{ $user -> id}}" {{ old('author_id') == $user-> id ? "selected" : "" }}>{{ $user -> name }}</option>
+            <option value="{{ $user -> id}}" {{ old('author_id', $post -> author_id) == $user-> id ? "selected" : "" }}>{{ $user -> name }}</option>
         @endforeach
     </select><br>
-    Publikus? <input type="checkbox" name="is_public" {{ old('is_public') == "on" ? "checked" : ""}}><br>
+    Publikus? <input type="checkbox" name="is_public" {{ old('is_public', $post -> is_public ? "on" : "off") == "on" ? "checked" : ""}}><br>
 
     <h3 class="text-xl">Kategóriák</h3>
     @foreach ($categories as $category)
         <input type="checkbox" class="mr-2" name="categories[]" value="{{ $category -> id }}"
-            {{ in_array($category -> id, old('categories', [])) ? "checked" : "" }}
+            {{ in_array($category -> id, old('categories', $post -> categories -> pluck('id') -> toArray()  )) ? "checked" : "" }}
         >
         <span style="color: {{ $category -> color }}">{{ $category -> name }}</span><br>
     @endforeach
