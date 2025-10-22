@@ -6,7 +6,11 @@ use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\PostStoreOrUpdateRequest;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -21,6 +25,7 @@ class PostController extends Controller
     }
 
     public function create(){
+        Gate::authorize('create', Post::class);
         return view('posts.create', [
             'users' => User::all(),
             'categories' => Category::all()
@@ -28,15 +33,26 @@ class PostController extends Controller
     }
 
     public function store(PostStoreOrUpdateRequest $request){
+        Gate::authorize('create', Post::class);
         $validated = $request -> validated();
         $validated['is_public'] = $request -> has('is_public');
+        $validated['author_id'] = Auth::user() -> id; // Auth::id()
+
+        if ($request -> hasFile('image_file')){
+            $file = $request -> file('image_file');
+            $fileName = Str::uuid() . "." . $file -> getClientOriginalExtension();
+            Storage::disk('public') -> put('images/'.$fileName, $file -> getContent());
+            $validated['image'] = $fileName;
+        }
+
         $post = Post::create($validated);
         $post -> categories() -> sync($validated['categories'] ?? []);
         Session::flash('post-created', $post -> title);
         return redirect() -> route('posts.index');
     }
 
-     public function edit(Post $post){
+    public function edit(Post $post){
+        Gate::authorize('update', $post);
         return view('posts.edit', [
             'users' => User::all(),
             'categories' => Category::all(),
@@ -45,6 +61,7 @@ class PostController extends Controller
     }
 
     public function update(PostStoreOrUpdateRequest $request, Post $post){
+        Gate::authorize('update', $post);
         $validated = $request -> validated();
         $validated['is_public'] = $request -> has('is_public');
         $post -> update($validated);
@@ -54,6 +71,7 @@ class PostController extends Controller
     }
 
     public function destroy(Post $post){
+        Gate::authorize('delete', $post);
         $post -> delete();
         // todo: Session::flash
         return redirect() -> route('posts.index');

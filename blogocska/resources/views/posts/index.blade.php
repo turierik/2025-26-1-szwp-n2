@@ -10,6 +10,11 @@
     </div>
 @endif
 
+@can('create', \App\Models\Post::class)
+    <a href="{{ route('posts.create')}}" class="text-green-500">Új bejegyzés írása</a>
+    <br><br>
+@endcan
+
 <ul>
     @foreach ($posts as $post)
         <li><a href="{{ route('posts.show', ['post' => $post]) }}">{{ $post -> title }}</a> <i>({{$post -> author -> name}})</i></li>

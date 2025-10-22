@@ -6,7 +6,7 @@
 
 <h2 class="text-2xl">Új bejegyzés létrehozása</h2>
 
-<form action="{{ route('posts.store') }}" method="POST">
+<form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     Cím: @error('title')
         <span class="text-red-500">{{ $message }}</span>
@@ -16,15 +16,10 @@
         <span class="text-red-500">{{ $message }}</span>
     @enderror<br>
     <textarea rows="5" name="content" class="w-full">{{ old('content', '') }}</textarea><br>
-    Szerző: @error('author_id')
-        <span class="text-red-500">{{ $message }}</span>
-    @enderror
-    <select name="author_id">
-        @foreach ($users as $user)
-            <option value="{{ $user -> id}}" {{ old('author_id') == $user-> id ? "selected" : "" }}>{{ $user -> name }}</option>
-        @endforeach
-    </select><br>
+
     Publikus? <input type="checkbox" name="is_public" {{ old('is_public') == "on" ? "checked" : ""}}><br>
+
+    Kép: <input type="file" name="image_file"><br>
 
     <h3 class="text-xl">Kategóriák</h3>
     @foreach ($categories as $category)
