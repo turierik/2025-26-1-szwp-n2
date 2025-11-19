@@ -23,6 +23,7 @@ class PostResource extends JsonResource
             'author_id' => $this -> author_id,
             'created_at' => Carbon::parse($this -> created_at) -> toDateTimeString(),
             'updated_at' => Carbon::parse($this -> updated_at) -> toDateTimeString(),
+            'categories' => CategoryResource::collection($this -> whenLoaded('categories'))
         ];
     }
 }
