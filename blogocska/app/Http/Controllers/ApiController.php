@@ -92,4 +92,35 @@ class ApiController extends Controller
         $posts = Post::with('categories') -> get();
         return PostResource::collection($posts);
     }
+
+    public function updateCategories(Request $request, string $post){
+        validator(
+            ['post' => $post],
+            ['post' => 'required|integer']
+        ) -> validate();
+        $post = Post::findOrFail($post);
+        $validated = $request -> validate([
+            "add" => "array",
+            "remove" => "array",
+            "add.*" => "integer|distinct|exists:categories,id|not_in:".implode(",", $request -> input('remove') ?? []),
+            "remove.*" => "integer|distinct|exists:categories,id|not_in:".implode(",", $request -> input('add') ?? []),
+        ]);
+        $validated["add"] ??= [];
+        $validated["remove"] ??= [];
+
+        $start = $post -> categories -> pluck('id') -> toArray();
+
+        // $post -> categories() -> attach($validated["add"]); // attach problémája: ha újra be akarok szúrni egy létező id párt, akkor a db elszáll unique miatt
+        $post -> categories() -> syncWithoutDetaching($validated["add"]);
+        $post -> categories() -> detach($validated["remove"]);
+
+        // return CategoryResource::collection($post -> categories);
+
+        return [
+            "added" => array_values(array_diff($validated["add"], $start)),
+            "was already added" => array_values(array_intersect($start, $validated["add"])),
+            "removed" => array_values(array_intersect($start, $validated["remove"])),
+            "was already removed" => array_values(array_diff($validated["remove"], $start))
+        ];
+    }
 }

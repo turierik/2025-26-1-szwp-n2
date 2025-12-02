@@ -15,3 +15,4 @@ Route::get('/posts/{post}', [ApiController::class, 'show']);
 Route::post('/posts', [ApiController::class, 'store']) -> middleware('auth:sanctum');
 Route::patch('/posts/{post}', [ApiController::class, 'update']) -> middleware('auth:sanctum');
 Route::get('/posts/{post}/categories', [ApiController::class, 'indexCategories']);
+Route::patch('/posts/{post}/categories', [ApiController::class, 'updateCategories']);
