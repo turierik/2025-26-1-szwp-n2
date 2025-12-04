@@ -17,6 +17,17 @@ type Query {
       "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
       name: String @where(operator: "like")
     ): [User!]! @paginate(defaultCount: 10)
+
+    square(x: Float!): Float!
+    posts: [Post!]! @all
+    post(id: ID! @eq): Post @find
+    stats: Stats!
+}
+
+type Stats {
+    postCount: Int!
+    publicPostCount: Int!
+    postPerCategory: Float!
 }
 
 "Account of a person who uses this application."
@@ -38,4 +49,37 @@ type User {
 
     "When the account was last updated."
     updated_at: DateTime!
+}
+
+type Post {
+    id: ID!
+    title: String!
+    content: String!
+    author_id: ID!
+    is_public: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    author: User!
+    categories: [Category!]!
+    length: Int!
+}
+
+type Category {
+    id: ID!
+    name: String!
+    color: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+input CreatePostInput {
+    title: String! @rules(apply: ["required", "string"])
+    content: String! @rules(apply: ["required", "string"])
+    author_id: ID! @rules(apply: ["required", "integer", "exists:users,id"])
+    is_public: Boolean! @rules(apply: ["required", "boolean"])
+}
+
+type Mutation {
+    createPost1(title: String!, content: String!, author_id: ID!, is_public: Boolean!): Post
+    createPost2(input: CreatePostInput! @spread): Post @create
 }
